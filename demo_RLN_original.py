@@ -6,7 +6,7 @@ import os
 import sys
 os.environ["CUDA_VISIBLE_DEVICES"]="1"
 
-from regularization_learning_networks.Implementations import RLNCallback
+from regularization_learning_networks_local.Implementations import RLNCallback
 
 from keras.wrappers.scikit_learn import KerasRegressor
 from sklearn.model_selection import cross_val_score, KFold
@@ -81,6 +81,9 @@ def test_regression_model(build_fn, modle_name, num_repeats=10):
     # https://github.com/scikit-learn/scikit-learn/issues/2439
     # So the closer to Zero the MSE, the better
 
+    # For regression, see e.g.
+    # https://stackoverflow.com/questions/44132652/keras-how-to-perform-a-prediction-using-kerasregressor
+
     seed(MJTCP_SEED)
     results = np.zeros(num_repeats)
     acc = np.zeros(num_repeats)
@@ -90,22 +93,22 @@ def test_regression_model(build_fn, modle_name, num_repeats=10):
         print('Repeat #', i+1, '/', num_repeats)
         reg = KerasRegressor(build_fn=build_fn, epochs=100, batch_size=10, verbose=0)
         reg.fit(x_train, y_train)
-        prediction = reg.predict(x_train)
-        # acc[i] = accuracy_score(y_test, prediction)
+        # prediction = reg.predict(x_train)
+        # acc[i] = accuracy_score(y_test, prediction) # TODO!
         results[i] = reg.score(x_test, y_test)
         print('   MSE (no cross-validation) = ', results[i])
 
-        n_splits = 10
-        kfold = KFold(n_splits=10, random_state=seed)
-        results_cv[i] = cross_val_score(reg, x_train, y_train, cv=kfold)
-        print('   MSE (cross-validation, ', n_splits, ' splits) = ', results_cv[i])
-        # print('   Accuracy = ', acc[i])
-        sys.stdout.flush()
+        # n_splits = 10
+        # kfold = KFold(n_splits=10, random_state=seed)
+        # results_cv[i] = cross_val_score(reg, x_train, y_train, cv=kfold)
+        # print('   MSE (cross-validation, ', n_splits, ' splits) = ', results_cv[i])
+        # # print('   Accuracy = ', acc[i])
+        # sys.stdout.flush()
 
     print("\n%s: Mean of MSE from %i repeats: %.2f (stdev = %.2f)" % (
         modle_name, num_repeats, results.mean(), results.std()))
-    print("%s: Mean of MSE with cross validation from %i repeats: %.2f (stdev = %.2f)" % (
-        modle_name, num_repeats, results_cv.mean(), results_cv.std()))
+    # print("%s: Mean of MSE with cross validation from %i repeats: %.2f (stdev = %.2f)" % (
+    #     modle_name, num_repeats, results_cv.mean(), results_cv.std()))
     # print("%s: Mean Accuracy from %i repeats: %.2f (stdev = %.2f)" % (
     #     modle_name, num_repeats, acc.mean(), acc.std()))
 
