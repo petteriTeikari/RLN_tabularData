@@ -1,0 +1,3 @@
+[submodule "regularization_learning_networks"]
+	path = regularization_learning_networks
+	url = https://github.com/irashavitt/regularization_learning_networks
